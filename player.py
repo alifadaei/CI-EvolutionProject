@@ -9,7 +9,8 @@ class Player():
 
     def __init__(self, mode, control=False):
 
-        self.control = control  # if True, playing mode is activated. else, AI mode.
+        # if True, playing mode is activated. else, AI mode.
+        self.control = control
         self.pos = [100, 275]   # position of the agent
         self.direction = -1     # if 1, goes upwards. else, goes downwards.
         self.v = 0              # vertical velocity
@@ -37,7 +38,8 @@ class Player():
         # AI control
         else:
             agent_position = [camera + self.pos[0], self.pos[1]]
-            self.direction = self.think(mode, box_lists, agent_position, self.v)
+            self.direction = self.think(
+                mode, box_lists, agent_position, self.v)
 
         # game physics
         if mode == 'gravity' or mode == 'helicopter':
@@ -97,7 +99,6 @@ class Player():
             layer_sizes = [6, 20, 1]
         return layer_sizes
 
-    
     def think(self, mode, box_lists, agent_position, velocity):
 
         # TODO
