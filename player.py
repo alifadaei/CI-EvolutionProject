@@ -9,13 +9,12 @@ class Player():
 
     def __init__(self, mode, control=False):
 
-        # if True, playing mode is activated. else, AI mode.
-        self.control = control
-        self.pos = [100, 275]   # position of the agent
-        self.direction = -1     # if 1, goes upwards. else, goes downwards.
-        self.v = 0              # vertical velocity
-        self.g = 9.8            # gravity constant
-        self.mode = mode        # game mode
+        self.control = control  # if True, playing mode is activated. else, AI mode.
+        self.pos = [100, 275]  # position of the agent
+        self.direction = -1  # if 1, goes upwards. else, goes downwards.
+        self.v = 0  # vertical velocity
+        self.g = 9.8  # gravity constant
+        self.mode = mode  # game mode
 
         # neural network architecture (AI mode)
         layer_sizes = self.init_network(mode)
@@ -38,8 +37,7 @@ class Player():
         # AI control
         else:
             agent_position = [camera + self.pos[0], self.pos[1]]
-            self.direction = self.think(
-                mode, box_lists, agent_position, self.v)
+            self.direction = self.think(mode, box_lists, agent_position, self.v)
 
         # game physics
         if mode == 'gravity' or mode == 'helicopter':
@@ -92,9 +90,9 @@ class Player():
 
         layer_sizes = None
         if mode == 'gravity':
-            layer_sizes = [6, 20, 1]
+            layer_sizes = [5, 20, 1]
         elif mode == 'helicopter':
-            layer_sizes = [6, 20, 1]
+            layer_sizes = [5, 20, 1]
         elif mode == 'thrust':
             layer_sizes = [6, 20, 1]
         return layer_sizes
@@ -107,8 +105,26 @@ class Player():
         # agent_position example: [600, 250]
         # velocity example: 7
 
-        direction = -1
+        temp_input = []
+        if mode == 'thrust':
+            temp_input.append(self.g)
+        if np.size(box_lists) > 0:
+            temp_input.append([(box_lists[0].x - agent_position[0]) / CONFIG.get('WIDTH')])
+            temp_input.append([(box_lists[0].gap_mid - agent_position[1]) / CONFIG.get('HEIGHT')])
+        else:
+            temp_input.append([1])
+            temp_input.append([0])
+        if np.size(box_lists) > 1:
+            temp_input.append([(box_lists[1].x - agent_position[0]) / CONFIG.get('WIDTH')])
+            temp_input.append([(box_lists[1].gap_mid - agent_position[1]) / CONFIG.get('HEIGHT')])
+        else:
+            temp_input.append([1])
+            temp_input.append([0])
+        temp_input.append([velocity / 12])
+        direction = self.nn.forward(temp_input)
         return direction
+        # direction = -1
+        # return direction
 
     def collision_detection(self, mode, box_lists, camera):
         if mode == 'helicopter':
