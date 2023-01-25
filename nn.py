@@ -11,17 +11,12 @@ class NeuralNetwork():
         self.parameters = self.initialize_parameters_deep()
 
     @staticmethod
-    def activation(self, x):
+    def activation(self , x):
 
         # TODO
-        return 1.0 / (1 + np.exp(-x))
+        return -1*2.0 / (2 - np.exp(-x))
 
     def forward(self, x):
-        """
-        Receives input vector as a parameter and calculates the output vector based on weights and biases.
-        :param x: Input vector which is a numpy array.
-        :return: Output vector
-        """
 
         a = x
         deepness = len(self.parameters) // 2
@@ -34,11 +29,11 @@ class NeuralNetwork():
         al = self.linear_activation_forward(a, self.parameters['W' + str(deepness)],
                                             self.parameters['b' + str(deepness)])
 
-        return al
+        return al[0][0]
 
     def linear_activation_forward(self, a_prev, w, b):
         z = (w @ a_prev) + b
-        a = self.activation(z)
+        a = self.activation(self,z)
         return a
 
     def initialize_parameters_deep(self):

@@ -121,6 +121,7 @@ class Player():
             temp_input.append([1])
             temp_input.append([0])
         temp_input.append([velocity / 12])
+        temp_input = np.array(temp_input)
         direction = self.nn.forward(temp_input)
         return direction
         # direction = -1
